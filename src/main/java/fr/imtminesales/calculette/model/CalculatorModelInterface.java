@@ -3,13 +3,7 @@ package fr.imtminesales.calculette.model;
 public interface CalculatorModelInterface {
     void setAccumulator(double value);
 
-    void add();
-
-    void subtract();
-
-    void multiply();
-
-    void divide();
+    void calculate(BinaryOperation operation);
 
     void push();
 

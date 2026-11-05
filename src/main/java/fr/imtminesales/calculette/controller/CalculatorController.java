@@ -1,6 +1,7 @@
 package fr.imtminesales.calculette.controller;
 
 import fr.imtminesales.calculette.model.CalculatorException;
+import fr.imtminesales.calculette.model.BinaryOperation;
 import fr.imtminesales.calculette.model.CalculatorModelInterface;
 import fr.imtminesales.calculette.model.CalculatorSnapshot;
 
@@ -50,28 +51,12 @@ public final class CalculatorController {
         execute(model::dropAll);
     }
 
-    public void add(String input) {
-        calculate(input, model::add);
-    }
-
-    public void subtract(String input) {
-        calculate(input, model::subtract);
-    }
-
-    public void multiply(String input) {
-        calculate(input, model::multiply);
-    }
-
-    public void divide(String input) {
-        calculate(input, model::divide);
-    }
-
-    private void calculate(String input, Runnable operation) {
+    public void calculate(String input, BinaryOperation operation) {
         execute(() -> {
             if (input != null && !input.isBlank()) {
                 model.setAccumulator(parseNumber(input));
             }
-            operation.run();
+            model.calculate(operation);
         });
     }
 

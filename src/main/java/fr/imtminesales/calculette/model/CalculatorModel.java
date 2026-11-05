@@ -6,7 +6,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalDouble;
-import java.util.function.DoubleBinaryOperator;
 
 public final class CalculatorModel implements CalculatorModelInterface {
     private final Deque<Double> stack = new ArrayDeque<>();
@@ -23,27 +22,14 @@ public final class CalculatorModel implements CalculatorModelInterface {
     }
 
     @Override
-    public void add() {
-        applyBinaryOperation((left, right) -> left + right);
-    }
-
-    @Override
-    public void subtract() {
-        applyBinaryOperation((left, right) -> left - right);
-    }
-
-    @Override
-    public void multiply() {
-        applyBinaryOperation((left, right) -> left * right);
-    }
-
-    @Override
-    public void divide() {
+    public void calculate(BinaryOperation operation) {
+        Objects.requireNonNull(operation);
         BinaryOperands operands = readOperands();
-        if (operands.right() == 0.0) {
-            throw new CalculatorException("Division par zero impossible.");
+        double result = operation.apply(operands.left(), operands.right());
+        if (!Double.isFinite(result)) {
+            throw new CalculatorException("Le resultat depasse la capacite de la calculatrice.");
         }
-        commitOperation(operands, operands.left() / operands.right());
+        commitOperation(operands, result);
     }
 
     @Override
@@ -106,15 +92,6 @@ public final class CalculatorModel implements CalculatorModelInterface {
     @Override
     public void removeListener(CalculatorModelListener listener) {
         listeners.remove(listener);
-    }
-
-    private void applyBinaryOperation(DoubleBinaryOperator operation) {
-        BinaryOperands operands = readOperands();
-        double result = operation.applyAsDouble(operands.left(), operands.right());
-        if (!Double.isFinite(result)) {
-            throw new CalculatorException("Le resultat depasse la capacite de la calculatrice.");
-        }
-        commitOperation(operands, result);
     }
 
     private BinaryOperands readOperands() {

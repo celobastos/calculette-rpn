@@ -18,10 +18,10 @@ class CalculatorModelTest {
         CalculatorModel model = new CalculatorModel();
         push(model, 3, 2, 5, 4, 7);
 
-        model.add();
-        model.multiply();
-        model.add();
-        model.multiply();
+        model.calculate(StandardOperation.ADD);
+        model.calculate(StandardOperation.MULTIPLY);
+        model.calculate(StandardOperation.ADD);
+        model.calculate(StandardOperation.MULTIPLY);
 
         assertEquals(171.0, model.snapshot().accumulator().orElseThrow(), DELTA);
         assertTrue(model.snapshot().stack().isEmpty());
@@ -31,13 +31,23 @@ class CalculatorModelTest {
     void respectsOperandOrderForSubtractionAndDivision() {
         CalculatorModel model = new CalculatorModel();
         push(model, 20, 4);
-        model.divide();
+        model.calculate(StandardOperation.DIVIDE);
         assertEquals(5.0, model.snapshot().accumulator().orElseThrow(), DELTA);
 
         model.push();
         model.setAccumulator(2);
-        model.subtract();
+        model.calculate(StandardOperation.SUBTRACT);
         assertEquals(3.0, model.snapshot().accumulator().orElseThrow(), DELTA);
+    }
+
+    @Test
+    void acceptsANewOperationWithoutChangingTheModel() {
+        CalculatorModel model = new CalculatorModel();
+        push(model, 2, 3);
+
+        model.calculate(Math::pow);
+
+        assertEquals(8.0, model.snapshot().accumulator().orElseThrow(), DELTA);
     }
 
     @Test
@@ -67,7 +77,8 @@ class CalculatorModelTest {
         push(model, 8, 0);
         CalculatorSnapshot before = model.snapshot();
 
-        CalculatorException error = assertThrows(CalculatorException.class, model::divide);
+        CalculatorException error = assertThrows(CalculatorException.class,
+                () -> model.calculate(StandardOperation.DIVIDE));
 
         assertEquals("Division par zero impossible.", error.getMessage());
         assertEquals(before, model.snapshot());
@@ -79,7 +90,7 @@ class CalculatorModelTest {
         model.setAccumulator(4);
         CalculatorSnapshot before = model.snapshot();
 
-        assertThrows(CalculatorException.class, model::add);
+        assertThrows(CalculatorException.class, () -> model.calculate(StandardOperation.ADD));
         assertEquals(before, model.snapshot());
         assertThrows(CalculatorException.class, model::swap);
     }

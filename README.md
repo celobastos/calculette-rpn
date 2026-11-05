@@ -19,6 +19,20 @@ mvn clean javafx:run
 mvn test
 ```
 
+## Tester le modele dans Eclipse
+
+Executer `ModelDemo` avec **Run As > Java Application**, puis saisir un nombre ou une commande dans la console.
+
+```text
+4
+push
+7
++
+exit
+```
+
+Les commandes disponibles sont `push`, `pop`, `drop`, `swap`, `clear`, `dropall`, `+`, `-`, `*` et `/`.
+
 ## Utilisation
 
 1. Saisir un nombre avec le clavier de l'application ou directement dans l'accumulateur.
