@@ -1,0 +1,115 @@
+.calculator-root {
+    -fx-background-color: linear-gradient(to bottom, #18191b, #050505);
+    -fx-padding: 14;
+}
+
+.calculator-body {
+    -fx-background-color: linear-gradient(to bottom, #24262a, #111214);
+    -fx-background-radius: 18;
+    -fx-border-color: #45484d;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.65), 18, 0.2, 0, 6);
+}
+
+.brand-label {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 25px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #f2f3f4;
+}
+
+.series-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9da3a9;
+}
+
+.section-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c7cbd0;
+}
+
+.display-field {
+    -fx-background-color: #c8d0b6;
+    -fx-background-radius: 4;
+    -fx-border-color: #6d7462;
+    -fx-border-radius: 4;
+    -fx-border-width: 2;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #152014;
+    -fx-prompt-text-fill: #697260;
+    -fx-padding: 8 10 8 10;
+}
+
+.stack-view {
+    -fx-background-color: #bbc4aa;
+    -fx-control-inner-background: #bbc4aa;
+    -fx-background-radius: 5;
+    -fx-border-color: #6d7462;
+    -fx-border-radius: 5;
+    -fx-border-width: 2;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 17px;
+}
+
+.stack-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #152014;
+    -fx-padding: 5 10 5 10;
+}
+
+.empty-stack-label {
+    -fx-text-fill: #66705e;
+    -fx-font-style: italic;
+}
+
+.calculator-button {
+    -fx-background-color: linear-gradient(to bottom, #494c51, #292b2f);
+    -fx-background-radius: 5;
+    -fx-border-color: #62666c;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-font-family: "Arial";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f4f4f4;
+    -fx-cursor: hand;
+}
+
+.calculator-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #62666c, #3a3d42);
+}
+
+.calculator-button:pressed {
+    -fx-background-color: #17181a;
+    -fx-translate-y: 1;
+}
+
+.number-button {
+    -fx-background-color: linear-gradient(to bottom, #3a3c40, #1f2023);
+}
+
+.operator-button {
+    -fx-background-color: linear-gradient(to bottom, #315e70, #1d3d4a);
+    -fx-border-color: #4f8194;
+}
+
+.function-button {
+    -fx-background-color: linear-gradient(to bottom, #60636a, #3c3e43);
+}
+
+.push-button {
+    -fx-background-color: linear-gradient(to bottom, #356b7f, #214553);
+    -fx-border-color: #5a8fa3;
+}
+
+.clear-button {
+    -fx-background-color: linear-gradient(to bottom, #a14a3f, #6f2f28);
+    -fx-border-color: #be6b60;
+}

@@ -16,6 +16,7 @@ final class CalculatorKeypad extends GridPane {
         this.controller = controller;
         setHgap(8);
         setVgap(8);
+        getStyleClass().add("calculator-keypad");
         buildKeys();
     }
 
@@ -34,17 +35,26 @@ final class CalculatorKeypad extends GridPane {
         }
 
         Button push = createButton("PUSH");
+        push.getStyleClass().add("push-button");
         push.setDefaultButton(true);
         push.setOnAction(event -> controller.push(accumulatorField.getText()));
         add(push, 0, 4, 3, 1);
 
         Button clear = createButton("CLEAR");
+        clear.getStyleClass().add("clear-button");
         clear.setOnAction(event -> controller.clear());
         add(clear, 3, 4);
     }
 
     private void addKey(String key, int column, int row) {
         Button button = createButton(key);
+        if (key.equals("+") || key.equals("-") || key.equals("x") || key.equals("/")) {
+            button.getStyleClass().add("operator-button");
+        } else if (key.equals("+/-")) {
+            button.getStyleClass().add("function-button");
+        } else {
+            button.getStyleClass().add("number-button");
+        }
         button.setMinHeight(48);
         configureAction(button, key);
         add(button, column, row);
@@ -55,7 +65,7 @@ final class CalculatorKeypad extends GridPane {
         Button button = new Button(text);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         button.setMinHeight(44);
-        button.setStyle("-fx-font-size: 17px;");
+        button.getStyleClass().add("calculator-button");
         GridPane.setHgrow(button, Priority.ALWAYS);
         return button;
     }
