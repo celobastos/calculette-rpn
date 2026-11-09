@@ -51,6 +51,82 @@ class CalculatorModelTest {
     }
 
     @Test
+    void calculatesScientificOperationsInDegrees() {
+        CalculatorModel model = new CalculatorModel();
+        model.setAccumulator(30);
+
+        model.calculate(ScientificOperation.SINE);
+
+        assertEquals(0.5, model.snapshot().accumulator().orElseThrow(), DELTA);
+    }
+
+    @Test
+    void appliesUnaryOperationToStackWhenAccumulatorIsEmpty() {
+        CalculatorModel model = new CalculatorModel();
+        push(model, 9);
+
+        model.calculate(ScientificOperation.SQUARE_ROOT);
+
+        assertEquals(3.0, model.snapshot().accumulator().orElseThrow(), DELTA);
+        assertTrue(model.snapshot().stack().isEmpty());
+    }
+
+    @Test
+    void keepsStateWhenScientificOperationFails() {
+        CalculatorModel model = new CalculatorModel();
+        model.setAccumulator(-1);
+        CalculatorSnapshot before = model.snapshot();
+
+        assertThrows(CalculatorException.class,
+                () -> model.calculate(ScientificOperation.SQUARE_ROOT));
+
+        assertEquals(before, model.snapshot());
+    }
+
+    @Test
+    void keepsStackWhenUnaryOperationUsesAccumulator() {
+        CalculatorModel model = new CalculatorModel();
+        push(model, 7);
+        model.setAccumulator(9);
+
+        model.calculate(ScientificOperation.SQUARE_ROOT);
+
+        assertEquals(3.0, model.snapshot().accumulator().orElseThrow(), DELTA);
+        assertEquals(List.of(7.0), model.snapshot().stack());
+    }
+
+    @Test
+    void calculatesPowerWithCorrectOperandOrder() {
+        CalculatorModel model = new CalculatorModel();
+        push(model, 2, 3);
+
+        model.calculate(StandardOperation.POWER);
+
+        assertEquals(8.0, model.snapshot().accumulator().orElseThrow(), DELTA);
+        assertTrue(model.snapshot().stack().isEmpty());
+    }
+
+    @Test
+    void rejectsNonFiniteScientificResultWithoutChangingState() {
+        CalculatorModel model = new CalculatorModel();
+        model.setAccumulator(1000);
+        CalculatorSnapshot before = model.snapshot();
+
+        assertThrows(CalculatorException.class,
+                () -> model.calculate(ScientificOperation.EXPONENTIAL));
+
+        assertEquals(before, model.snapshot());
+    }
+
+    @Test
+    void rejectsUnaryOperationWhenCalculatorIsEmpty() {
+        CalculatorModel model = new CalculatorModel();
+
+        assertThrows(CalculatorException.class,
+                () -> model.calculate(ScientificOperation.SQUARE));
+    }
+
+    @Test
     void supportsAllStackCommands() {
         CalculatorModel model = new CalculatorModel();
         push(model, 1, 2, 3);
@@ -106,6 +182,22 @@ class CalculatorModelTest {
         model.pop();
 
         assertEquals(3, notifications.get());
+    }
+
+    @Test
+    void removesListenerAndDoesNotNotifyAfterFailure() {
+        CalculatorModel model = new CalculatorModel();
+        AtomicInteger notifications = new AtomicInteger();
+        CalculatorModelListener listener = snapshot -> notifications.incrementAndGet();
+        model.addListener(listener);
+
+        model.setAccumulator(-1);
+        assertThrows(CalculatorException.class,
+                () -> model.calculate(ScientificOperation.SQUARE_ROOT));
+        model.removeListener(listener);
+        model.clear();
+
+        assertEquals(1, notifications.get());
     }
 
     private void push(CalculatorModel model, double... values) {

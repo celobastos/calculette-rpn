@@ -4,6 +4,7 @@ public enum StandardOperation implements BinaryOperation {
     ADD((left, right) -> left + right),
     SUBTRACT((left, right) -> left - right),
     MULTIPLY((left, right) -> left * right),
+    POWER(Math::pow),
     DIVIDE((left, right) -> {
         if (right == 0.0) {
             throw new CalculatorException("Division par zero impossible.");

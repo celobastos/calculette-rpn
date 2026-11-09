@@ -1,11 +1,12 @@
 package fr.imtminesales.calculette.controller;
 
+import fr.imtminesales.calculette.CalculatorNumberFormatter;
 import fr.imtminesales.calculette.model.CalculatorException;
 import fr.imtminesales.calculette.model.BinaryOperation;
 import fr.imtminesales.calculette.model.CalculatorModelInterface;
 import fr.imtminesales.calculette.model.CalculatorSnapshot;
+import fr.imtminesales.calculette.model.UnaryOperation;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,10 +19,6 @@ public final class CalculatorController {
         this.view = Objects.requireNonNull(view);
         model.addListener(this::change);
         change(model.snapshot());
-    }
-
-    public void enterNumber(String input) {
-        execute(() -> model.setAccumulator(parseNumber(input)));
     }
 
     public void push(String input) {
@@ -53,11 +50,20 @@ public final class CalculatorController {
 
     public void calculate(String input, BinaryOperation operation) {
         execute(() -> {
-            if (input != null && !input.isBlank()) {
-                model.setAccumulator(parseNumber(input));
-            }
+            updateAccumulator(input);
             model.calculate(operation);
         });
+    }
+
+    public void calculate(String input, UnaryOperation operation) {
+        execute(() -> {
+            updateAccumulator(input);
+            model.calculate(operation);
+        });
+    }
+
+    public void useConstant(double value) {
+        execute(() -> model.setAccumulator(value));
     }
 
     private void execute(Runnable command) {
@@ -65,6 +71,12 @@ public final class CalculatorController {
             command.run();
         } catch (CalculatorException exception) {
             view.showError(exception.getMessage());
+        }
+    }
+
+    private void updateAccumulator(String input) {
+        if (input != null && !input.isBlank()) {
+            model.setAccumulator(parseNumber(input));
         }
     }
 
@@ -85,17 +97,12 @@ public final class CalculatorController {
 
     private void change(CalculatorSnapshot snapshot) {
         String accumulator = snapshot.accumulator().isPresent()
-                ? format(snapshot.accumulator().getAsDouble())
+                ? CalculatorNumberFormatter.format(snapshot.accumulator().getAsDouble())
                 : "";
-        List<String> stack = snapshot.stack().stream().map(this::format).toList();
+        List<String> stack = snapshot.stack().stream()
+                .map(CalculatorNumberFormatter::format)
+                .toList();
         view.changeAccumulator(accumulator);
         view.changeStackData(stack);
-    }
-
-    private String format(double value) {
-        if (value == 0.0) {
-            return "0";
-        }
-        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
     }
 }

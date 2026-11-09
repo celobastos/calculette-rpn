@@ -104,6 +104,13 @@
     -fx-background-color: linear-gradient(to bottom, #60636a, #3c3e43);
 }
 
+.scientific-button {
+    -fx-background-color: linear-gradient(to bottom, #575b61, #303236);
+    -fx-border-color: #72777e;
+    -fx-font-size: 14px;
+    -fx-min-height: 36px;
+}
+
 .push-button {
     -fx-background-color: linear-gradient(to bottom, #356b7f, #214553);
     -fx-border-color: #5a8fa3;

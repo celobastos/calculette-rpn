@@ -5,23 +5,44 @@ Application Java/JavaFX d'une calculatrice en notation polonaise inverse (RPN), 
 ## Prerequis
 
 - JDK 17 ou plus recent
-- Maven 3.9 ou plus recent
+- Eclipse IDE avec le support Maven, inclus dans les distributions recentes d'Eclipse
+- Maven 3.9 ou plus recent uniquement pour une execution depuis un terminal
 
-## Executer l'application
+Il n'est pas necessaire de telecharger ou de configurer manuellement le SDK JavaFX. Les bibliotheques JavaFX, JUnit et les plugins necessaires sont declares dans le fichier `pom.xml` et sont telecharges automatiquement par Maven lors de la premiere execution. Une connexion Internet est donc necessaire uniquement pour ce premier telechargement.
+
+## Importer et executer dans Eclipse
+
+1. Ouvrir Eclipse.
+2. Selectionner **File > Import... > Maven > Existing Maven Projects**.
+3. Selectionner le dossier contenant ce projet et son fichier `pom.xml`.
+4. Cliquer sur **Finish** et attendre la fin du telechargement des dependances Maven.
+5. Faire un clic droit sur le projet puis selectionner **Run As > Maven build...**.
+6. Saisir `clean javafx:run` dans le champ **Goals**, puis cliquer sur **Run**.
+
+Pour les executions suivantes, la configuration creee apparait directement dans **Run As > Maven build**.
+
+Si Eclipse n'actualise pas automatiquement les dependances, faire un clic droit sur le projet puis selectionner **Maven > Update Project... > OK**.
+
+## Executer l'application graphique depuis un terminal
+
+Ouvrir un terminal dans le dossier contenant le fichier `pom.xml`, puis executer :
 
 ```bash
 mvn clean javafx:run
 ```
 
-## Executer les tests
+Maven telecharge automatiquement JavaFX et demarre l'application graphique. Il faut executer cette commande depuis le dossier du projet, et non depuis le dossier personnel de l'utilisateur.
+
+## Executer le modele sans interface graphique
+
+Le modele peut egalement etre compile et execute directement dans un terminal, sans demarrer JavaFX :
 
 ```bash
-mvn test
+mvn compile
+java -cp target/classes fr.imtminesales.calculette.ModelDemo
 ```
 
-## Tester le modele dans Eclipse
-
-Executer `ModelDemo` avec **Run As > Java Application**, puis saisir un nombre ou une commande dans la console.
+Il est alors possible de saisir des nombres et des commandes directement dans la console :
 
 ```text
 4
@@ -31,7 +52,35 @@ push
 exit
 ```
 
-Les commandes disponibles sont `push`, `pop`, `drop`, `swap`, `clear`, `dropall`, `+`, `-`, `*` et `/`.
+Les commandes disponibles sont :
+
+- pile : `push`, `pop`, `drop`, `swap`, `clear` et `dropall` ;
+- arithmetique : `+`, `-`, `*`, `/` et `^` (ou `pow`) ;
+- scientifiques : `sin`, `cos`, `tan`, `square`, `sqrt`, `inverse`, `ln`, `log` et `exp` ;
+- constantes : `pi` et `e` ;
+- assistance : `help` et `exit`.
+
+Les fonctions trigonometriques utilisent des angles en degres. Les fonctions unaires s'appliquent a l'accumulateur s'il contient une valeur, ou au sommet de la pile si l'accumulateur est vide. Pour une puissance, empiler la base, saisir l'exposant, puis utiliser `^`.
+
+Cette execution en console a ete ajoutee pour demontrer concretement l'independance des couches de l'architecture MVC. Le modele ne depend ni de JavaFX, ni de la vue, ni du controleur : il peut donc fonctionner seul. De la meme maniere, le controleur depend de contrats (`CalculatorModelInterface` et `CalculatorView`) et non des implementations graphiques. Il peut ainsi etre teste avec une vue simplifiee sans lancer JavaFX.
+
+## Executer les tests unitaires
+
+```bash
+mvn test
+```
+
+Les tests unitaires verifient separement le fonctionnement du modele, du controleur et des operations utilisees par l'interface. Les tests du controleur emploient une implementation de test de `CalculatorView` a la place de la vue JavaFX. Ils confirment ainsi que :
+
+- le modele execute correctement les operations RPN et scientifiques sans interface graphique ;
+- le controleur communique avec le modele et le contrat de la vue sans dependre de JavaFX ;
+- la vue reste responsable de l'affichage et transmet les actions, tandis que les calculs restent dans le modele.
+
+Cette separation permet de verifier le fonctionnement des trois parties de l'architecture MVC sans melanger leurs responsabilites.
+
+## Tester le modele dans Eclipse
+
+Executer `ModelDemo` avec **Run As > Java Application**, puis saisir un nombre ou une commande dans la console.
 
 ## Utilisation
 
@@ -58,6 +107,21 @@ Les autres commandes sont :
 - **+/-** : change le signe de la saisie courante.
 
 Les nombres peuvent etre saisis avec un point ou une virgule comme separateur decimal.
+
+## Extensions
+
+- **FONCTIONS SCIENTIFIQUES** : calcule `sin`, `cos`, `tan`, `x²`, `√x`, `1/x`, `ln`, `log`, `eˣ` et `xʸ`. Les angles sont exprimes en degres.
+- **CONSTANTES** : place `π` ou `e` dans l'accumulateur.
+- **⌫** : efface le dernier caractere de l'accumulateur.
+
+## Ameliorations ajoutees apres la presentation
+
+La version presentee initialement contenait principalement les operations arithmetiques RPN et les commandes de pile. Apres la presentation, nous avons pu ajouter deux ameliorations supplementaires :
+
+- les operations unaires et scientifiques `sin`, `cos`, `tan`, `x²`, `√x`, `1/x`, `ln`, `log` et `eˣ`, ainsi que les constantes `π` et `e` ;
+- le bouton **⌫**, qui permet d'effacer le dernier caractere saisi sans vider completement l'accumulateur.
+
+Ces ajouts utilisent la meme architecture MVC que les fonctions initiales. Les calculs restent realises dans le modele et sont declenches depuis l'interface par le controleur.
 
 ## Architecture
 

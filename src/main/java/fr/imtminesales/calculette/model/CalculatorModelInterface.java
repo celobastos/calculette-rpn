@@ -5,6 +5,8 @@ public interface CalculatorModelInterface {
 
     void calculate(BinaryOperation operation);
 
+    void calculate(UnaryOperation operation);
+
     void push();
 
     void pop();

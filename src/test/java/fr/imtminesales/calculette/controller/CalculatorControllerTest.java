@@ -1,6 +1,7 @@
 package fr.imtminesales.calculette.controller;
 
 import fr.imtminesales.calculette.model.CalculatorModel;
+import fr.imtminesales.calculette.model.ScientificOperation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,14 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CalculatorControllerTest {
     @Test
-    void acceptsCommaAndRefreshesView() {
+    void acceptsCommaAndRefreshesStack() {
         FakeView view = new FakeView();
         CalculatorController controller = new CalculatorController(new CalculatorModel(), view);
 
         controller.push("2,5");
-        controller.enterNumber("4");
 
-        assertEquals("4", view.accumulator);
+        assertEquals("", view.accumulator);
         assertEquals(List.of("2.5"), view.stack);
         assertTrue(view.errors.isEmpty());
     }
@@ -32,6 +32,49 @@ class CalculatorControllerTest {
 
         assertEquals(List.of("Nombre invalide : abc"), view.errors);
         assertTrue(view.stack.isEmpty());
+    }
+
+    @Test
+    void executesScientificOperationAndConstants() {
+        FakeView view = new FakeView();
+        CalculatorController controller = new CalculatorController(new CalculatorModel(), view);
+
+        controller.calculate("30", ScientificOperation.SINE);
+        assertEquals("0.5", view.accumulator);
+
+        controller.useConstant(Math.PI);
+        assertEquals("3.14159265359", view.accumulator);
+    }
+
+    @Test
+    void roundsFloatingPointArtifactsForTheDisplay() {
+        FakeView view = new FakeView();
+        CalculatorController controller = new CalculatorController(new CalculatorModel(), view);
+
+        controller.calculate("60", ScientificOperation.COSINE);
+
+        assertEquals("0.5", view.accumulator);
+    }
+
+    @Test
+    void reportsScientificDomainErrorAndPreservesValue() {
+        FakeView view = new FakeView();
+        CalculatorController controller = new CalculatorController(new CalculatorModel(), view);
+
+        controller.calculate("-1", ScientificOperation.SQUARE_ROOT);
+
+        assertEquals("-1", view.accumulator);
+        assertEquals(List.of("La racine carree exige une valeur positive."), view.errors);
+    }
+
+    @Test
+    void reportsEmptyScientificOperationWithoutCrashing() {
+        FakeView view = new FakeView();
+        CalculatorController controller = new CalculatorController(new CalculatorModel(), view);
+
+        controller.calculate("", ScientificOperation.SQUARE);
+
+        assertEquals(List.of("Une operande est necessaire."), view.errors);
     }
 
     private static final class FakeView implements CalculatorView {

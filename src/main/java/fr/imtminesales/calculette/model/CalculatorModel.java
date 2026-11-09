@@ -25,11 +25,27 @@ public final class CalculatorModel implements CalculatorModelInterface {
     public void calculate(BinaryOperation operation) {
         Objects.requireNonNull(operation);
         BinaryOperands operands = readOperands();
-        double result = operation.apply(operands.left(), operands.right());
-        if (!Double.isFinite(result)) {
-            throw new CalculatorException("Le resultat depasse la capacite de la calculatrice.");
-        }
+        double result = requireFinite(operation.apply(operands.left(), operands.right()));
         commitOperation(operands, result);
+    }
+
+    @Override
+    public void calculate(UnaryOperation operation) {
+        Objects.requireNonNull(operation);
+        boolean usesStack = accumulator == null;
+        double operand;
+        if (usesStack) {
+            requireStackSize(1, "Une operande est necessaire.");
+            operand = stack.peek();
+        } else {
+            operand = accumulator;
+        }
+        double result = requireFinite(operation.apply(operand));
+        if (usesStack) {
+            stack.pop();
+        }
+        accumulator = result;
+        notifyListeners();
     }
 
     @Override
@@ -126,6 +142,13 @@ public final class CalculatorModel implements CalculatorModelInterface {
         if (stack.size() < expected) {
             throw new CalculatorException(message);
         }
+    }
+
+    private double requireFinite(double value) {
+        if (!Double.isFinite(value)) {
+            throw new CalculatorException("Le resultat depasse la capacite de la calculatrice.");
+        }
+        return value;
     }
 
     private void notifyListeners() {

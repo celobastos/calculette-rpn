@@ -24,11 +24,8 @@ import java.util.Objects;
 public final class CalculatorGUI implements CalculatorView {
     private final TextField accumulatorField = new TextField();
     private final ListView<String> stackView = new ListView<>();
-    private CalculatorController controller;
 
     public void show(Stage stage, CalculatorController controller) {
-        this.controller = controller;
-
         accumulatorField.setPromptText("Accumulateur");
         accumulatorField.setAlignment(Pos.CENTER_RIGHT);
         accumulatorField.getStyleClass().add("display-field");
@@ -43,7 +40,7 @@ public final class CalculatorGUI implements CalculatorView {
 
         Label brand = new Label("CASIO");
         brand.getStyleClass().add("brand-label");
-        Label series = new Label("RPN SCIENTIFIC");
+        Label series = new Label("RPN SCIENTIFIC  DEG");
         series.getStyleClass().add("series-label");
         Region brandSpacer = new Region();
         HBox.setHgrow(brandSpacer, Priority.ALWAYS);
@@ -74,7 +71,7 @@ public final class CalculatorGUI implements CalculatorView {
 
         BorderPane root = new BorderPane(center);
         root.getStyleClass().add("calculator-root");
-        Scene scene = new Scene(root, 430, 720);
+        Scene scene = new Scene(root, 430, 900);
         scene.getStylesheets().add(Objects.requireNonNull(
                 CalculatorGUI.class.getResource("calculator.css")).toExternalForm());
         scene.setOnKeyPressed(event -> {
@@ -85,7 +82,7 @@ public final class CalculatorGUI implements CalculatorView {
 
         stage.setTitle("CASIO RPN - IMT Mines Ales");
         stage.setMinWidth(410);
-        stage.setMinHeight(680);
+        stage.setMinHeight(820);
         stage.setScene(scene);
         stage.show();
         accumulatorField.requestFocus();
